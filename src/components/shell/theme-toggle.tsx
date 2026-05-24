@@ -27,6 +27,10 @@ const options: Array<{
 
 const themeChangeEvent = "aah-theme-change";
 
+export function isThemePreference(value: string): value is ThemePreference {
+  return value === "light" || value === "dark" || value === "system";
+}
+
 function readStoredTheme(): ThemePreference {
   if (typeof window === "undefined") return "system";
 
@@ -106,7 +110,9 @@ export function ThemeToggle() {
         <DropdownMenuRadioGroup
           value={theme}
           onValueChange={(value) => {
-            applyTheme(value as ThemePreference);
+            if (isThemePreference(value)) {
+              applyTheme(value);
+            }
           }}
         >
           {options.map((option) => {

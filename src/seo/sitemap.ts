@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getPublicDiscoveryLocales } from "~/i18n/locales";
 import { buildAbsoluteUrl } from "./url";
 
 export type SitemapSourceRecord = {
@@ -24,4 +25,19 @@ export function buildSitemapEntries(
 
       return entry;
     });
+}
+
+export function getPublicDiscoverySitemapRecords(): SitemapSourceRecord[] {
+  return [
+    { path: "/", published: true, indexable: true },
+    ...getPublicDiscoveryLocales().map((locale) => ({
+      path: `/${locale.urlCode}`,
+      published: true,
+      indexable: true,
+    })),
+  ];
+}
+
+export function getRobotsAllowedPaths(): string[] {
+  return getPublicDiscoverySitemapRecords().map((record) => record.path);
 }

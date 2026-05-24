@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { buildPageMetadata, buildPublishedLanguageAlternates } from "./metadata";
+import {
+  buildPageMetadata,
+  buildPublishedLanguageAlternates,
+  getPublicDiscoveryLocalePaths,
+} from "./metadata";
 
 describe("metadata helpers", () => {
   beforeEach(() => {
@@ -35,6 +39,12 @@ describe("metadata helpers", () => {
         "zh-CN": "/zh-cn/directory/models/gpt-4o",
       },
     });
+  });
+
+  it("derives published locale paths from the locale registry", () => {
+    expect(getPublicDiscoveryLocalePaths()).toEqual([
+      { localeCode: "zh-cn", path: "/zh-cn", published: true },
+    ]);
   });
 
   it("builds Next metadata with canonical, robots, and Open Graph fields", () => {

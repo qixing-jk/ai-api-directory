@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { getLocaleByCode, type LocaleCode } from "~/i18n/locales";
+import {
+  getLocaleByCode,
+  getPublicDiscoveryLocales,
+  type LocaleCode,
+} from "~/i18n/locales";
 import { buildAbsoluteUrl, buildCanonicalPath, getSiteUrl } from "./url";
 
 export type PublishedLocalePath = {
@@ -54,6 +58,14 @@ export function buildPublishedLanguageAlternates({
     canonical: buildCanonicalPath(canonicalPath),
     languages,
   };
+}
+
+export function getPublicDiscoveryLocalePaths(): PublishedLocalePath[] {
+  return getPublicDiscoveryLocales().map((locale) => ({
+    localeCode: locale.urlCode as LocaleCode,
+    path: `/${locale.urlCode}`,
+    published: true,
+  }));
 }
 
 export function buildPageMetadata(input: PageMetadataInput): Metadata {

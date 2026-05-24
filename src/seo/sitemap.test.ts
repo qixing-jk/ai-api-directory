@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { buildSitemapEntries } from "./sitemap";
+import {
+  buildSitemapEntries,
+  getPublicDiscoverySitemapRecords,
+  getRobotsAllowedPaths,
+} from "./sitemap";
 
 describe("sitemap helpers", () => {
   beforeEach(() => {
@@ -23,6 +27,14 @@ describe("sitemap helpers", () => {
         url: "http://localhost:3000/zh-cn",
       },
     ]);
+  });
+
+  it("derives public sitemap records and robots allow paths from the locale registry", () => {
+    expect(getPublicDiscoverySitemapRecords()).toEqual([
+      { path: "/", published: true, indexable: true },
+      { path: "/zh-cn", published: true, indexable: true },
+    ]);
+    expect(getRobotsAllowedPaths()).toEqual(["/", "/zh-cn"]);
   });
 
   it("passes through lastModified for indexable published records", () => {

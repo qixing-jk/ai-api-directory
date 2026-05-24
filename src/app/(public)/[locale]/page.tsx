@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { buildPageMetadata } from "~/seo/metadata";
+import {
+  buildPageMetadata,
+  getPublicDiscoveryLocalePaths,
+} from "~/seo/metadata";
 
 export async function generateMetadata({
   params,
@@ -16,7 +19,7 @@ export async function generateMetadata({
     title: t("siteName"),
     description: t("publicDescription"),
     robots: { index: locale === "zh-cn", follow: true },
-    localePaths: [{ localeCode: "zh-cn", path: "/zh-cn", published: true }],
+    localePaths: getPublicDiscoveryLocalePaths(),
   });
 }
 

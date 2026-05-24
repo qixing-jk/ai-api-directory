@@ -21,6 +21,14 @@ describe("URL helpers", () => {
     expect(getSiteUrl()).toBe("http://localhost:3000");
   });
 
+  it("fails fast without a configured production site URL", () => {
+    vi.stubEnv("NODE_ENV", "production");
+
+    expect(() => getSiteUrl()).toThrow(
+      "Missing NEXT_PUBLIC_SITE_URL or SITE_URL in production",
+    );
+  });
+
   it("trims trailing slashes from SITE_URL", () => {
     vi.stubEnv("SITE_URL", "https://example.com/");
 

@@ -27,4 +27,8 @@ test("global preference menus switch locale and theme", async ({ page }) => {
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem("theme")))
     .toBe("dark");
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveClass(/dark/);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });

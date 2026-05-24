@@ -15,7 +15,16 @@ export function ExternalLink({
   rel,
   ...props
 }: ExternalLinkProps) {
-  const safeRel = target === "_blank" ? (rel ?? "noreferrer noopener") : rel;
+  const safeRel =
+    target === "_blank"
+      ? Array.from(
+          new Set([
+            ...(rel?.split(/\s+/).filter(Boolean) ?? []),
+            "noopener",
+            "noreferrer",
+          ]),
+        ).join(" ")
+      : rel;
 
   return (
     <a

@@ -16,7 +16,9 @@ Implement this plan against:
 
 - `docs/superpowers/specs/2026-05-24-web-runtime-shell-design.md`
 
-Before writing Next.js route/layout/metadata code, read the local Next.js docs that govern the touched APIs:
+Before writing Next.js route/layout/metadata code, read the local Next.js 16
+docs that govern the touched APIs. This repo pins Next.js 16.2.6, so do not
+apply older App Router signatures from memory:
 
 - `node_modules/next/dist/docs/01-app/02-guides/internationalization.md`
 - `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/layout.md`
@@ -25,6 +27,15 @@ Before writing Next.js route/layout/metadata code, read the local Next.js docs t
 - `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/01-metadata/robots.md`
 - `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/01-metadata/sitemap.md`
 - `node_modules/next/dist/docs/01-app/03-api-reference/05-config/01-next-config-js/typedRoutes.md`
+
+Next 16 breakage checklist for this shell:
+
+- Treat `params` and `searchParams` as async page/layout inputs and await them
+  before destructuring.
+- Treat request APIs such as `cookies()` and `headers()` as async, and avoid
+  pulling them into static shell code unless dynamic rendering is intentional.
+- Re-check the local docs before changing `generateMetadata`, sitemap, robots,
+  and typed route signatures or return shapes.
 
 ## File Structure
 

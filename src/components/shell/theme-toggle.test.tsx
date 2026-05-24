@@ -2,7 +2,10 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { shellTestIds } from "~/components/shell/test-ids";
-import { ThemeToggle } from "~/components/shell/theme-toggle";
+import {
+  isThemePreference,
+  ThemeToggle,
+} from "~/components/shell/theme-toggle";
 
 vi.mock("next-intl", () => ({
   useTranslations: (namespace: string) => (key: string) => `${namespace}.${key}`,
@@ -51,5 +54,12 @@ describe("ThemeToggle", () => {
     expect(localStorage.getItem("theme")).toBe("dark");
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(document.documentElement.classList.contains("dark")).toBe(true);
+  });
+
+  it("guards arbitrary menu values before applying a theme", () => {
+    expect(isThemePreference("light")).toBe(true);
+    expect(isThemePreference("dark")).toBe(true);
+    expect(isThemePreference("system")).toBe(true);
+    expect(isThemePreference("solarized")).toBe(false);
   });
 });

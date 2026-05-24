@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getRobotsAllowedPaths } from "~/seo/sitemap";
 import { getSiteUrl } from "~/seo/url";
 
 export default function robots(): MetadataRoute.Robots {
@@ -6,8 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/zh-cn"],
-        disallow: ["/admin", "/admin/", "/api", "/api/"],
+        allow: getRobotsAllowedPaths(),
+        disallow: ["/admin", "/api"],
       },
     ],
     sitemap: `${getSiteUrl()}/sitemap.xml`,

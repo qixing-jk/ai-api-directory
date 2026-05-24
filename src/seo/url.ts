@@ -2,7 +2,13 @@ const DEFAULT_SITE_URL = "http://localhost:3000";
 
 export function getSiteUrl(): string {
   const configured = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.SITE_URL;
-  if (!configured) return DEFAULT_SITE_URL;
+  if (!configured) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Missing NEXT_PUBLIC_SITE_URL or SITE_URL in production");
+    }
+
+    return DEFAULT_SITE_URL;
+  }
 
   return configured.replace(/\/+$/, "");
 }
