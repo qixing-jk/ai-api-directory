@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "validate": "pnpm lint && pnpm test:run && pnpm build"
   },
@@ -34,6 +35,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "4.1.7",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "jsdom": "^29.1.1",
