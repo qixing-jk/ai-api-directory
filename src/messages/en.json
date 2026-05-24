@@ -1,0 +1,55 @@
+{
+  "Root": {
+    "title": "AI API Directory",
+    "description": "Discover, compare, and evaluate AI API relay, aggregation, and model access sites.",
+    "chooseLanguage": "Choose language",
+    "enterChinese": "简体中文",
+    "enterEnglish": "Enter English site"
+  },
+  "PublicNav": {
+    "home": "Home",
+    "directory": "Directory",
+    "pricing": "Model pricing",
+    "guides": "Guides",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "PublicHome": {
+    "eyebrow": "AI API relay directory",
+    "title": "Compare AI API relay sites, models, prices, and evidence.",
+    "description": "This runtime shell is ready for the later public directory, pricing, model, site, and guide pages."
+  },
+  "Common": {
+    "close": "Close"
+  },
+  "Admin": {
+    "title": "Admin",
+    "description": "Content review, publishing, and operations entry.",
+    "shellTitle": "AI API Directory Admin",
+    "shellOnly": "Shell only",
+    "notReady": "Admin authentication, RBAC, content editing, review, and publishing workflows are intentionally reserved for later specs.",
+    "errorTitle": "Admin error",
+    "errorDescription": "The admin shell could not display this page.",
+    "notFoundTitle": "Admin page not found",
+    "notFoundDescription": "The requested admin page does not exist."
+  },
+  "Metadata": {
+    "siteName": "AI API Directory",
+    "rootDescription": "Discover, compare, and evaluate AI API relay, aggregation, and model access sites.",
+    "publicDescription": "Compare AI API models, prices, site evidence, and risk signals.",
+    "adminDescription": "AI API Directory admin."
+  },
+  "Errors": {
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "This page does not exist or has not been published in the current language.",
+    "errorTitle": "This page cannot be displayed",
+    "errorDescription": "Please try again later.",
+    "tryAgain": "Try again",
+    "returnHome": "Return home"
+  },
+  "Theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  }
+}

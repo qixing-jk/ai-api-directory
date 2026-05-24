@@ -1,0 +1,55 @@
+{
+  "Root": {
+    "title": "AI API Directory",
+    "description": "发现、比较和评估 AI API 中转、聚合与模型访问站点。",
+    "chooseLanguage": "选择语言",
+    "enterChinese": "进入中文站",
+    "enterEnglish": "English"
+  },
+  "PublicNav": {
+    "home": "首页",
+    "directory": "目录",
+    "pricing": "模型价格",
+    "guides": "指南",
+    "language": "语言",
+    "theme": "主题"
+  },
+  "PublicHome": {
+    "eyebrow": "AI API 中转目录",
+    "title": "比较 AI API 中转站点、模型、价格与证据。",
+    "description": "这个运行时外壳已经准备好承载后续的公开目录、价格、模型、站点和指南页面。"
+  },
+  "Common": {
+    "close": "关闭"
+  },
+  "Admin": {
+    "title": "管理后台",
+    "description": "内容审核、发布与运行维护入口。",
+    "shellTitle": "AI API Directory 管理后台",
+    "shellOnly": "仅外壳",
+    "notReady": "后台认证、权限、内容编辑、审核和发布工作流将在后续规格中实现。",
+    "errorTitle": "管理后台出错",
+    "errorDescription": "管理后台暂时无法显示该页面。",
+    "notFoundTitle": "管理页面不存在",
+    "notFoundDescription": "请求的管理页面不存在。"
+  },
+  "Metadata": {
+    "siteName": "AI API Directory",
+    "rootDescription": "发现、比较和评估 AI API 中转、聚合与模型访问站点。",
+    "publicDescription": "比较 AI API 模型、价格、站点证据与风险信息。",
+    "adminDescription": "AI API Directory 管理后台。"
+  },
+  "Errors": {
+    "notFoundTitle": "页面不存在",
+    "notFoundDescription": "该页面不存在或尚未以当前语言发布。",
+    "errorTitle": "页面暂时无法显示",
+    "errorDescription": "请稍后重试。",
+    "tryAgain": "重试",
+    "returnHome": "返回首页"
+  },
+  "Theme": {
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统"
+  }
+}
