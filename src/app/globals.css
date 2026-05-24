@@ -1,26 +1,95 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #111827;
+  --surface: #ffffff;
+  --surface-muted: #eef2f7;
+  --muted-foreground: #526071;
+  --border: #d8dee8;
+  --focus: #2563eb;
+  --brand: #1455d9;
+  --brand-foreground: #ffffff;
+  --success: #0f766e;
+  --warning: #a15c07;
+  --danger: #b42318;
+  --danger-foreground: #ffffff;
+  --neutral: #64748b;
+  --risk-low: #0f766e;
+  --risk-caution: #a15c07;
+  --risk-high: #b42318;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #0b1020;
+  --foreground: #eef2ff;
+  --surface: #111827;
+  --surface-muted: #1f2937;
+  --muted-foreground: #aab4c6;
+  --border: #344155;
+  --focus: #60a5fa;
+  --brand: #60a5fa;
+  --brand-foreground: #08111f;
+  --success: #2dd4bf;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --danger-foreground: #08111f;
+  --neutral: #94a3b8;
+  --risk-low: #2dd4bf;
+  --risk-caution: #fbbf24;
+  --risk-high: #f87171;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-focus: var(--focus);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-neutral: var(--neutral);
+  --color-risk-low: var(--risk-low);
+  --color-risk-caution: var(--risk-caution);
+  --color-risk-high: var(--risk-high);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --radius-sm: calc(var(--radius) - 0.25rem);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 0.25rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
+}
+
+html {
+  min-height: 100%;
+  background: var(--background);
 }
 
 body {
+  min-height: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
