@@ -4,6 +4,7 @@ import { assertCanTransition } from "../lifecycle";
 import {
   buildPublicProjection,
   privateProjectionField,
+  type PublicProjectionInput,
 } from "../projection/public-boundary";
 import { publishableLifecycle } from "../vocabularies";
 import {
@@ -81,19 +82,19 @@ describe("domain publishing policy contract", () => {
       updatedAt: "2026-05-24T00:00:00.000Z",
     });
 
-    expect(() =>
-      buildPublicProjection({
-        entityId: "site-1",
-        versionId: "version-1",
-        slug: "example-api",
-        title: "Example API",
-        summary: "Public summary",
-        publicUrl: "https://example.com/dashboard",
-        evidence: [],
-        updatedAt: "2026-05-24T00:00:00.000Z",
-        [privateProjectionField.adminNotes]: "internal-only",
-      }),
-    ).toThrow(
+    const unsafeInput = {
+      entityId: "site-1",
+      versionId: "version-1",
+      slug: "example-api",
+      title: "Example API",
+      summary: "Public summary",
+      publicUrl: "https://example.com/dashboard",
+      evidence: [],
+      updatedAt: "2026-05-24T00:00:00.000Z",
+      [privateProjectionField.adminNotes]: "internal-only",
+    } as PublicProjectionInput & Record<string, unknown>;
+
+    expect(() => buildPublicProjection(unsafeInput)).toThrow(
       `Public projection input contains private field: ${privateProjectionField.adminNotes}`,
     );
   });
