@@ -56,7 +56,7 @@ Do not implement:
 Create these files:
 
 - `drizzle.config.ts`: Drizzle Kit configuration for the initial Postgres schema and migration output.
-- `src/db/schema/enums.ts`: shared Postgres enum definitions and schema-owned literal registries.
+- `src/db/schema/*-enums.ts`: feature-local Postgres enum definitions for publishing, directory, evidence, and audit schema ownership.
 - `src/db/schema/admin.ts`: admin actor, role, permission, and relationship tables.
 - `src/db/schema/directory.ts`: site, endpoint, canonical model, model alias, and model route tables.
 - `src/db/schema/evidence.ts`: verification evidence, price snapshot, capability signal, and risk signal tables.
@@ -184,7 +184,10 @@ git commit -m "chore: add persistence boundary dependencies"
 **Files:**
 
 - Create: `drizzle.config.ts`
-- Create: `src/db/schema/enums.ts`
+- Create: `src/db/schema/publishing-enums.ts`
+- Create: `src/db/schema/directory-enums.ts`
+- Create: `src/db/schema/evidence-enums.ts`
+- Create: `src/db/schema/audit-enums.ts`
 - Create: `src/db/schema/admin.ts`
 - Create: `src/db/schema/directory.ts`
 - Create: `src/db/schema/evidence.ts`
@@ -211,96 +214,20 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 2: Create shared enum schema**
+- [ ] **Step 2: Create feature-local enum schemas**
 
-Create `src/db/schema/enums.ts`:
+Create feature-local enum modules under `src/db/schema`. Keep enum definitions at
+the smallest stable ownership boundary: publishing lifecycle/projection enums in
+`publishing-enums.ts`, directory site/model-route enums in `directory-enums.ts`,
+evidence and signal enums in `evidence-enums.ts`, and audit actor enums in
+`audit-enums.ts`.
 
-```ts
-import { pgEnum } from "drizzle-orm/pg-core";
+Ownership map:
 
-export const lifecyclePgEnum = pgEnum("publishable_lifecycle", [
-  "draft",
-  "pending_review",
-  "approved",
-  "published",
-  "disputed",
-  "withdrawn",
-  "archived",
-  "rejected",
-]);
-
-export const siteCategoryPgEnum = pgEnum("site_category", [
-  "official",
-  "aggregator",
-  "relay",
-  "charity",
-  "self_hosted",
-  "unknown",
-]);
-
-export const siteTypePgEnum = pgEnum("site_type", [
-  "one_api",
-  "new_api",
-  "one_hub",
-  "done_hub",
-  "aihubmix",
-  "custom",
-  "unknown",
-]);
-
-export const endpointKindPgEnum = pgEnum("endpoint_kind", [
-  "homepage",
-  "console",
-  "api",
-  "docs",
-  "pricing",
-  "recharge",
-  "status",
-  "unknown",
-]);
-
-export const evidenceLevelPgEnum = pgEnum("evidence_level", [
-  "claimed",
-  "listed",
-  "observed",
-  "tested",
-  "manually_confirmed",
-]);
-
-export const factLevelPgEnum = pgEnum("fact_level", [
-  "claimed",
-  "listed",
-  "observed",
-  "tested",
-  "disputed",
-]);
-
-export const candidateDispositionPgEnum = pgEnum("candidate_disposition", [
-  "candidate",
-  "ready_for_review",
-  "merged",
-  "dismissed",
-]);
-
-export const signalDispositionPgEnum = pgEnum("signal_disposition", [
-  "active",
-  "superseded",
-  "dismissed",
-  "withdrawn",
-]);
-
-export const actorTypePgEnum = pgEnum("actor_type", ["admin", "system"]);
-
-export const projectionFamilyPgEnum = pgEnum("projection_family", [
-  "entity_page",
-  "index_list",
-  "pricing",
-  "navigation",
-  "metadata",
-  "sitemap",
-  "hreflang",
-]);
-```
+- `publishing-enums.ts`: `lifecyclePgEnum`, `projectionFamilyPgEnum`
+- `directory-enums.ts`: `siteCategoryPgEnum`, `siteTypePgEnum`, `endpointKindPgEnum`, `factLevelPgEnum`
+- `evidence-enums.ts`: `evidenceLevelPgEnum`, `candidateDispositionPgEnum`, `signalDispositionPgEnum`
+- `audit-enums.ts`: `actorTypePgEnum`
 
 - [ ] **Step 3: Create admin schema**
 
@@ -399,10 +326,10 @@ import {
 import {
   endpointKindPgEnum,
   factLevelPgEnum,
-  lifecyclePgEnum,
   siteCategoryPgEnum,
   siteTypePgEnum,
-} from "./enums";
+} from "./directory-enums";
+import { lifecyclePgEnum } from "./publishing-enums";
 
 export const sites = pgTable(
   "sites",
@@ -526,7 +453,7 @@ import {
   candidateDispositionPgEnum,
   evidenceLevelPgEnum,
   signalDispositionPgEnum,
-} from "./enums";
+} from "./evidence-enums";
 
 export const verificationEvidence = pgTable(
   "verification_evidence",
@@ -628,7 +555,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
-import { lifecyclePgEnum, projectionFamilyPgEnum } from "./enums";
+import { lifecyclePgEnum, projectionFamilyPgEnum } from "./publishing-enums";
 
 export const publishableVersions = pgTable(
   "publishable_versions",
@@ -684,7 +611,7 @@ Create `src/db/schema/audit.ts`:
 ```ts
 import { index, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { adminUsers } from "./admin";
-import { actorTypePgEnum } from "./enums";
+import { actorTypePgEnum } from "./audit-enums";
 
 export const adminAuditEvents = pgTable(
   "admin_audit_events",
@@ -716,9 +643,12 @@ Create `src/db/schema/index.ts`:
 ```ts
 export * from "./admin";
 export * from "./audit";
+export * from "./audit-enums";
 export * from "./directory";
-export * from "./enums";
+export * from "./directory-enums";
+export * from "./evidence-enums";
 export * from "./evidence";
+export * from "./publishing-enums";
 export * from "./publishing";
 ```
 

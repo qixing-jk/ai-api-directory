@@ -24,7 +24,7 @@ export const adminUsers = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("admin_users_email_unique").on(table.email),
+    uniqueIndex("admin_users_email_unique").on(sql`lower(${table.email})`),
     uniqueIndex("admin_users_external_auth_unique").on(
       table.externalAuthProvider,
       table.externalAuthId,

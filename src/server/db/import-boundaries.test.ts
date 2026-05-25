@@ -104,8 +104,13 @@ function isForbiddenDomainSpecifier(
     specifier === "drizzle-orm" ||
     specifier.startsWith("drizzle-orm/") ||
     specifier === "postgres" ||
+    specifier.startsWith("postgres/") ||
+    specifier === "next" ||
     specifier.startsWith("next/") ||
-    specifier === "react"
+    specifier === "react" ||
+    specifier.startsWith("react/") ||
+    specifier === "react-dom" ||
+    specifier.startsWith("react-dom/")
   ) {
     return true;
   }
@@ -170,8 +175,12 @@ describe("persistence import boundaries", () => {
     ).toBe(true);
     expect(isForbiddenDomainSpecifier("../../db/schema", domainFile)).toBe(true);
     expect(isForbiddenDomainSpecifier("drizzle-orm/sql", domainFile)).toBe(true);
+    expect(isForbiddenDomainSpecifier("postgres/cf", domainFile)).toBe(true);
+    expect(isForbiddenDomainSpecifier("next", domainFile)).toBe(true);
     expect(isForbiddenDomainSpecifier("next/navigation", domainFile)).toBe(true);
     expect(isForbiddenDomainSpecifier("react", domainFile)).toBe(true);
+    expect(isForbiddenDomainSpecifier("react/cache", domainFile)).toBe(true);
+    expect(isForbiddenDomainSpecifier("react-dom/server", domainFile)).toBe(true);
     expect(isForbiddenDomainSpecifier("../lifecycle", domainFile)).toBe(false);
   });
 

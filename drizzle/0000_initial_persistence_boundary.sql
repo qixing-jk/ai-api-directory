@@ -223,11 +223,9 @@ ALTER TABLE "admin_user_roles" ADD CONSTRAINT "admin_user_roles_role_id_admin_ro
 ALTER TABLE "admin_audit_events" ADD CONSTRAINT "admin_audit_events_actor_id_admin_users_id_fk" FOREIGN KEY ("actor_id") REFERENCES "public"."admin_users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "model_aliases" ADD CONSTRAINT "model_aliases_canonical_model_id_canonical_models_id_fk" FOREIGN KEY ("canonical_model_id") REFERENCES "public"."canonical_models"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "model_routes" ADD CONSTRAINT "model_routes_site_id_sites_id_fk" FOREIGN KEY ("site_id") REFERENCES "public"."sites"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "model_routes" ADD CONSTRAINT "model_routes_endpoint_id_site_endpoints_id_fk" FOREIGN KEY ("endpoint_id") REFERENCES "public"."site_endpoints"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "model_routes" ADD CONSTRAINT "model_routes_canonical_model_id_canonical_models_id_fk" FOREIGN KEY ("canonical_model_id") REFERENCES "public"."canonical_models"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "model_routes" ADD CONSTRAINT "model_routes_endpoint_site_fk" FOREIGN KEY ("endpoint_id","site_id") REFERENCES "public"."site_endpoints"("id","site_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "site_endpoints" ADD CONSTRAINT "site_endpoints_site_id_sites_id_fk" FOREIGN KEY ("site_id") REFERENCES "public"."sites"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "sites" ADD CONSTRAINT "sites_active_published_version_id_publishable_versions_id_fk" FOREIGN KEY ("active_published_version_id") REFERENCES "public"."publishable_versions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sites" ADD CONSTRAINT "sites_active_published_version_entity_fk" FOREIGN KEY ("active_published_version_id","id") REFERENCES "public"."publishable_versions"("id","entity_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "price_snapshots" ADD CONSTRAINT "price_snapshots_model_route_id_model_routes_id_fk" FOREIGN KEY ("model_route_id") REFERENCES "public"."model_routes"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "price_snapshots" ADD CONSTRAINT "price_snapshots_source_evidence_id_verification_evidence_id_fk" FOREIGN KEY ("source_evidence_id") REFERENCES "public"."verification_evidence"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -240,7 +238,7 @@ ALTER TABLE "publishable_versions" ADD CONSTRAINT "publishable_versions_reviewed
 ALTER TABLE "published_projection_records" ADD CONSTRAINT "published_projection_records_source_version_id_publishable_versions_id_fk" FOREIGN KEY ("source_version_id") REFERENCES "public"."publishable_versions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "admin_role_permissions_permission_idx" ON "admin_role_permissions" USING btree ("permission_id");--> statement-breakpoint
 CREATE INDEX "admin_user_roles_role_idx" ON "admin_user_roles" USING btree ("role_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "admin_users_email_unique" ON "admin_users" USING btree ("email");--> statement-breakpoint
+CREATE UNIQUE INDEX "admin_users_email_unique" ON "admin_users" USING btree (lower("email"));--> statement-breakpoint
 CREATE UNIQUE INDEX "admin_users_external_auth_unique" ON "admin_users" USING btree ("external_auth_provider","external_auth_id") WHERE "admin_users"."external_auth_provider" is not null and "admin_users"."external_auth_id" is not null;--> statement-breakpoint
 CREATE INDEX "admin_audit_events_object_idx" ON "admin_audit_events" USING btree ("object_family","object_id");--> statement-breakpoint
 CREATE INDEX "admin_audit_events_command_idx" ON "admin_audit_events" USING btree ("command_id");--> statement-breakpoint

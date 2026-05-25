@@ -82,7 +82,11 @@ describe("domain publishing policy contract", () => {
       updatedAt: "2026-05-24T00:00:00.000Z",
     });
 
-    const unsafeInput = {
+    type ProjectionInputWithAdminNotes = PublicProjectionInput & {
+      readonly [privateProjectionField.adminNotes]: string;
+    };
+
+    const unsafeInput: ProjectionInputWithAdminNotes = {
       entityId: "site-1",
       versionId: "version-1",
       slug: "example-api",
@@ -92,7 +96,7 @@ describe("domain publishing policy contract", () => {
       evidence: [],
       updatedAt: "2026-05-24T00:00:00.000Z",
       [privateProjectionField.adminNotes]: "internal-only",
-    } as PublicProjectionInput & Record<string, unknown>;
+    };
 
     expect(() => buildPublicProjection(unsafeInput)).toThrow(
       `Public projection input contains private field: ${privateProjectionField.adminNotes}`,

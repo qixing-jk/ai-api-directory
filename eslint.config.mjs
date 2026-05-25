@@ -9,19 +9,28 @@ const checkedRelativeDepths = Array.from({ length: 12 }, (_, index) => index + 1
 const componentBoundaryPatterns = [
   "~/db",
   "~/db/*",
+  "~/db/**",
   "~/server/db",
   "~/server/db/*",
+  "~/server/db/**",
 ];
 const domainBoundaryPatterns = [
   "~/db",
   "~/db/*",
+  "~/db/**",
   "~/server",
   "~/server/*",
+  "~/server/**",
   "drizzle-orm",
   "drizzle-orm/*",
   "postgres",
+  "postgres/*",
+  "next",
   "next/*",
   "react",
+  "react/*",
+  "react-dom",
+  "react-dom/*",
 ];
 
 function sourceDepthGlob(root, depth) {

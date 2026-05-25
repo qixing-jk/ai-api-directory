@@ -3,6 +3,9 @@ import { mapAdminDirectoryReviewToDto } from "./admin-directory";
 import { mapSeedSiteCandidateToCandidateInput } from "./import-candidate";
 import { mapProjectionRecordToPublicDto } from "./public-projection";
 
+const entityId = "11111111-1111-4111-8111-111111111111";
+const versionId = "22222222-2222-4222-8222-222222222222";
+
 describe("server DB mappers", () => {
   it("validates projection payloads before returning public DTOs", () => {
     expect(() =>
@@ -10,8 +13,8 @@ describe("server DB mappers", () => {
         projectionKey: "site/example-api",
         locale: "zh-cn",
         payload: {
-          entityId: "site-1",
-          versionId: "version-1",
+          entityId,
+          versionId,
           slug: "example-api",
           title: "Example API",
           summary: "Public summary",
@@ -27,8 +30,8 @@ describe("server DB mappers", () => {
   it("maps sanitized admin review context to admin DTOs", () => {
     expect(
       mapAdminDirectoryReviewToDto({
-        entityId: "site-1",
-        versionId: "version-1",
+        entityId,
+        versionId,
         lifecycle: "pending_review",
         title: "Example API",
         reviewSummary: "Needs source review",
@@ -37,8 +40,8 @@ describe("server DB mappers", () => {
         rawEvidence: { requestBody: "private" },
       }),
     ).toEqual({
-      entityId: "site-1",
-      versionId: "version-1",
+      entityId,
+      versionId,
       lifecycle: "pending_review",
       title: "Example API",
       reviewSummary: "Needs source review",

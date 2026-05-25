@@ -10,7 +10,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { adminUsers } from "./admin";
-import { lifecyclePgEnum, projectionFamilyPgEnum } from "./enums";
+import { lifecyclePgEnum, projectionFamilyPgEnum } from "./publishing-enums";
 
 export const publishableVersions = pgTable(
   "publishable_versions",

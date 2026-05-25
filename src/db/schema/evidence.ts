@@ -14,7 +14,7 @@ import {
   candidateDispositionPgEnum,
   evidenceLevelPgEnum,
   signalDispositionPgEnum,
-} from "./enums";
+} from "./evidence-enums";
 
 export const verificationEvidence = pgTable(
   "verification_evidence",

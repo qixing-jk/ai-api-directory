@@ -3,6 +3,9 @@ import { createAuditEventAppender } from "./audit";
 import { createEvidenceAppender } from "./evidence";
 import { createProjectionReader } from "./projections";
 
+const entityId = "11111111-1111-4111-8111-111111111111";
+const versionId = "22222222-2222-4222-8222-222222222222";
+
 describe("repository contracts", () => {
   it("projection readers validate public DTO output", async () => {
     const reader = createProjectionReader({
@@ -12,8 +15,8 @@ describe("repository contracts", () => {
             projectionKey: "site/example-api",
             locale: "zh-cn",
             payload: {
-              entityId: "site-1",
-              versionId: "version-1",
+              entityId,
+              versionId,
               slug: "example-api",
               title: "Example API",
               summary: "Public summary",
@@ -28,8 +31,8 @@ describe("repository contracts", () => {
 
     await expect(reader.listPublicProjections()).resolves.toEqual([
       {
-        entityId: "site-1",
-        versionId: "version-1",
+        entityId,
+        versionId,
         slug: "example-api",
         title: "Example API",
         summary: "Public summary",

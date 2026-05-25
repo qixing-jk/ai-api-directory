@@ -14,10 +14,12 @@ import {
 import {
   endpointKindPgEnum,
   factLevelPgEnum,
-  lifecyclePgEnum,
   siteCategoryPgEnum,
   siteTypePgEnum,
-} from "./enums";
+} from "./directory-enums";
+import {
+  lifecyclePgEnum,
+} from "./publishing-enums";
 import { publishableVersions } from "./publishing";
 
 export const sites = pgTable(
@@ -29,9 +31,7 @@ export const sites = pgTable(
     category: siteCategoryPgEnum("category").notNull().default("unknown"),
     siteType: siteTypePgEnum("site_type").notNull().default("unknown"),
     lifecycle: lifecyclePgEnum("lifecycle").notNull().default("draft"),
-    activePublishedVersionId: uuid("active_published_version_id").references(
-      () => publishableVersions.id,
-    ),
+    activePublishedVersionId: uuid("active_published_version_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -108,7 +108,7 @@ export const modelRoutes = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     siteId: uuid("site_id").notNull().references(() => sites.id),
-    endpointId: uuid("endpoint_id").references(() => siteEndpoints.id),
+    endpointId: uuid("endpoint_id"),
     canonicalModelId: uuid("canonical_model_id")
       .notNull()
       .references(() => canonicalModels.id),

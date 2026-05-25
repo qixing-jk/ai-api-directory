@@ -326,8 +326,8 @@
           "name": "admin_users_email_unique",
           "columns": [
             {
-              "expression": "email",
-              "isExpression": false,
+              "expression": "lower(\"email\")",
+              "isExpression": true,
               "asc": true,
               "nulls": "last"
             }
@@ -862,19 +862,6 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "model_routes_endpoint_id_site_endpoints_id_fk": {
-          "name": "model_routes_endpoint_id_site_endpoints_id_fk",
-          "tableFrom": "model_routes",
-          "tableTo": "site_endpoints",
-          "columnsFrom": [
-            "endpoint_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "model_routes_canonical_model_id_canonical_models_id_fk": {
           "name": "model_routes_canonical_model_id_canonical_models_id_fk",
           "tableFrom": "model_routes",
@@ -1134,19 +1121,6 @@
         }
       },
       "foreignKeys": {
-        "sites_active_published_version_id_publishable_versions_id_fk": {
-          "name": "sites_active_published_version_id_publishable_versions_id_fk",
-          "tableFrom": "sites",
-          "tableTo": "publishable_versions",
-          "columnsFrom": [
-            "active_published_version_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "sites_active_published_version_entity_fk": {
           "name": "sites_active_published_version_entity_fk",
           "tableFrom": "sites",

@@ -12,7 +12,7 @@ export function mapSeedSiteCandidateToCandidateInput(
 ): SiteCandidateInput {
   const parsed = seedSiteCandidateInputSchema.parse(input);
   return {
-    disposition: "candidate",
     ...parsed,
+    disposition: "candidate",
   };
 }
