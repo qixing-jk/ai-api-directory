@@ -62,7 +62,12 @@ describe("projection rebuild planning policy", () => {
     expect(() =>
       assertProjectionCanCommit(plan, { scope: "site-1", version: 8 }),
     ).toThrow(
-      "Projection checkpoint conflict for site-1: expected 7, received 8",
+      "Projection checkpoint conflict: expected (site-1, v7), received (site-1, v8)",
+    );
+    expect(() =>
+      assertProjectionCanCommit(plan, { scope: "site-2", version: 7 }),
+    ).toThrow(
+      "Projection checkpoint conflict: expected (site-1, v7), received (site-2, v7)",
     );
   });
 

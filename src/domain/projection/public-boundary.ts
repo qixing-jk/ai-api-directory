@@ -17,7 +17,16 @@ export type PublicProjection = {
   readonly updatedAt: string;
 };
 
-export type PublicProjectionInput = PublicProjection & Record<string, unknown>;
+export type PublicProjectionInput = {
+  readonly entityId: string;
+  readonly versionId: string;
+  readonly slug: string;
+  readonly title: string;
+  readonly summary: string;
+  readonly publicUrl: string;
+  readonly evidence: readonly EvidenceSummary[];
+  readonly updatedAt: string;
+};
 
 export type AdminReviewViewModel = {
   readonly entityId: string;
@@ -59,7 +68,7 @@ function assertNoPrivateFields(input: Record<string, unknown>): void {
 export function buildPublicProjection(
   input: PublicProjectionInput,
 ): PublicProjection {
-  assertNoPrivateFields(input);
+  assertNoPrivateFields(input as unknown as Record<string, unknown>);
 
   return {
     entityId: input.entityId,

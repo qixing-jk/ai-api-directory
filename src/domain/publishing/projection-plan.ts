@@ -50,7 +50,7 @@ export function assertProjectionCanCommit(
   ) {
     throw new DomainPolicyError(
       domainPolicyErrorCode.projectionConflict,
-      `Projection checkpoint conflict for ${plan.baseCheckpoint.scope}: expected ${plan.baseCheckpoint.version}, received ${currentCheckpoint.version}`,
+      `Projection checkpoint conflict: expected (${plan.baseCheckpoint.scope}, v${plan.baseCheckpoint.version}), received (${currentCheckpoint.scope}, v${currentCheckpoint.version})`,
     );
   }
 }

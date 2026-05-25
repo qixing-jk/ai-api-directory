@@ -81,55 +81,55 @@ describe("public projection boundary", () => {
       rawEvidenceId: "raw-1",
     });
 
-    expect(() =>
-      buildPublicProjection({
-        entityId: "site-1",
-        versionId: "version-1",
-        slug: "example-api",
-        title: "Example API",
-        summary: "Public summary",
-        publicUrl: "https://example.com",
-        evidence: [],
-        updatedAt: "2026-05-24T00:00:00.000Z",
-        [privateProjectionField.adminNotes]: "Internal note",
-      }),
-    ).toThrow(
+    const unsafeInput = {
+      entityId: "site-1",
+      versionId: "version-1",
+      slug: "example-api",
+      title: "Example API",
+      summary: "Public summary",
+      publicUrl: "https://example.com",
+      evidence: [],
+      updatedAt: "2026-05-24T00:00:00.000Z",
+      [privateProjectionField.adminNotes]: "Internal note",
+    } as PublicProjectionInput & Record<string, unknown>;
+
+    expect(() => buildPublicProjection(unsafeInput)).toThrow(
       `Public projection input contains private field: ${privateProjectionField.adminNotes}`,
     );
   });
 
   it("rejects raw evidence and private metadata fields", () => {
-    expect(() =>
-      buildPublicProjection({
-        entityId: "site-1",
-        versionId: "version-1",
-        slug: "example-api",
-        title: "Example API",
-        summary: "Public summary",
-        publicUrl: "https://example.com",
-        evidence: [],
-        updatedAt: "2026-05-24T00:00:00.000Z",
-        [privateProjectionField.rawEvidence]: { requestBody: "private" },
-      }),
-    ).toThrow(
+    const inputWithRawEvidence = {
+      entityId: "site-1",
+      versionId: "version-1",
+      slug: "example-api",
+      title: "Example API",
+      summary: "Public summary",
+      publicUrl: "https://example.com",
+      evidence: [],
+      updatedAt: "2026-05-24T00:00:00.000Z",
+      [privateProjectionField.rawEvidence]: { requestBody: "private" },
+    } as PublicProjectionInput & Record<string, unknown>;
+
+    expect(() => buildPublicProjection(inputWithRawEvidence)).toThrow(
       `Public projection input contains private field: ${privateProjectionField.rawEvidence}`,
     );
 
-    expect(() =>
-      buildPublicProjection({
-        entityId: "site-1",
-        versionId: "version-1",
-        slug: "example-api",
-        title: "Example API",
-        summary: "Public summary",
-        publicUrl: "https://example.com",
-        evidence: [],
-        updatedAt: "2026-05-24T00:00:00.000Z",
-        [privateProjectionField.privateSourceMetadata]: {
-          scrapedFromAccount: "private-account",
-        },
-      }),
-    ).toThrow(
+    const inputWithPrivateMetadata = {
+      entityId: "site-1",
+      versionId: "version-1",
+      slug: "example-api",
+      title: "Example API",
+      summary: "Public summary",
+      publicUrl: "https://example.com",
+      evidence: [],
+      updatedAt: "2026-05-24T00:00:00.000Z",
+      [privateProjectionField.privateSourceMetadata]: {
+        scrapedFromAccount: "private-account",
+      },
+    } as PublicProjectionInput & Record<string, unknown>;
+
+    expect(() => buildPublicProjection(inputWithPrivateMetadata)).toThrow(
       `Public projection input contains private field: ${privateProjectionField.privateSourceMetadata}`,
     );
   });

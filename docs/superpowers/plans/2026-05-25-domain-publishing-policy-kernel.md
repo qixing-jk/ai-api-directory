@@ -1051,7 +1051,7 @@ export type ProjectionFamily = ValueOf<typeof projectionFamily>;
 Create `src/domain/publishing/eligibility.ts`:
 
 ```ts
-import { publishableLifecycle } from "../vocabularies";
+import { publishableLifecycle, type ValueOf } from "../vocabularies";
 import type {
   CandidateRecord,
   PublishableVersion,
@@ -1280,7 +1280,16 @@ export type PublicProjection = {
   readonly updatedAt: string;
 };
 
-export type PublicProjectionInput = PublicProjection & Record<string, unknown>;
+export type PublicProjectionInput = {
+  readonly entityId: string;
+  readonly versionId: string;
+  readonly slug: string;
+  readonly title: string;
+  readonly summary: string;
+  readonly publicUrl: string;
+  readonly evidence: readonly EvidenceSummary[];
+  readonly updatedAt: string;
+};
 
 export type AdminReviewViewModel = {
   readonly entityId: string;
@@ -1322,7 +1331,7 @@ function assertNoPrivateFields(input: Record<string, unknown>): void {
 export function buildPublicProjection(
   input: PublicProjectionInput,
 ): PublicProjection {
-  assertNoPrivateFields(input);
+  assertNoPrivateFields(input as unknown as Record<string, unknown>);
 
   return {
     entityId: input.entityId,
@@ -1331,12 +1340,23 @@ export function buildPublicProjection(
     title: input.title,
     summary: input.summary,
     publicUrl: normalizeUrlToOrigin(input.publicUrl),
-    evidence: input.evidence.map((evidence) => ({
-      ...evidence,
-      publicSourceUrl: evidence.publicSourceUrl
-        ? normalizePublicSourceUrl(evidence.publicSourceUrl)
-        : undefined,
-    })),
+    evidence: input.evidence.map((evidence) => {
+      assertNoPrivateFields(evidence as Record<string, unknown>);
+
+      const publicEvidence: EvidenceSummary = {
+        level: evidence.level,
+        observedAt: evidence.observedAt,
+      };
+
+      if (!evidence.publicSourceUrl) {
+        return publicEvidence;
+      }
+
+      return {
+        ...publicEvidence,
+        publicSourceUrl: normalizePublicSourceUrl(evidence.publicSourceUrl),
+      };
+    }),
     updatedAt: input.updatedAt,
   };
 }
@@ -1571,16 +1591,20 @@ export type {
   StableEntity,
 } from "./types";
 
-export type EligibilityResult =
-  | { ok: true }
-  | { ok: false; reason: string };
-
 export const eligibilityFailureReason = {
   entityVersionMustBeApproved:
     "Entity version must be approved before publication",
   missingPublicDiscoveryLocale:
     "V1 text-bearing pages require a published active-discovery locale",
 } as const;
+
+export type EligibilityFailureReason = ValueOf<
+  typeof eligibilityFailureReason
+>;
+
+export type EligibilityResult =
+  | { ok: true }
+  | { ok: false; reason: EligibilityFailureReason };
 
 export type LocaleRenderabilityInput = {
   readonly entityVersion: PublishableVersion;
@@ -2013,7 +2037,7 @@ describe("projection rebuild planning policy", () => {
     expect(() =>
       assertProjectionCanCommit(plan, { scope: "site-1", version: 8 }),
     ).toThrow(
-      "Projection checkpoint conflict for site-1: expected 7, received 8",
+      "Projection checkpoint conflict: expected (site-1, v7), received (site-1, v8)",
     );
   });
 });
@@ -2082,7 +2106,7 @@ export function assertProjectionCanCommit(
   ) {
     throw new DomainPolicyError(
       domainPolicyErrorCode.projectionConflict,
-      `Projection checkpoint conflict for ${plan.baseCheckpoint.scope}: expected ${plan.baseCheckpoint.version}, received ${currentCheckpoint.version}`,
+      `Projection checkpoint conflict: expected (${plan.baseCheckpoint.scope}, v${plan.baseCheckpoint.version}), received (${currentCheckpoint.scope}, v${currentCheckpoint.version})`,
     );
   }
 }

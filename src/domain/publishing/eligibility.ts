@@ -1,5 +1,5 @@
 import { getPublicDiscoveryLocales, type AppLocale } from "~/i18n/locales";
-import { publishableLifecycle } from "../vocabularies";
+import { publishableLifecycle, type ValueOf } from "../vocabularies";
 import type {
   CandidateRecord,
   LocalePublication,
@@ -14,14 +14,20 @@ export type {
   StableEntity,
 } from "./types";
 
-export type EligibilityResult = { ok: true } | { ok: false; reason: string };
-
 export const eligibilityFailureReason = {
   entityVersionMustBeApproved:
     "Entity version must be approved before publication",
   missingPublicDiscoveryLocale:
     "V1 text-bearing pages require a published active-discovery locale",
 } as const;
+
+export type EligibilityFailureReason = ValueOf<
+  typeof eligibilityFailureReason
+>;
+
+export type EligibilityResult =
+  | { ok: true }
+  | { ok: false; reason: EligibilityFailureReason };
 
 export type LocaleRenderabilityInput = {
   readonly entityVersion: PublishableVersion;
