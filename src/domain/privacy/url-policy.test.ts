@@ -15,12 +15,26 @@ describe("public source URL policy", () => {
     ).toBe("https://api.example.com");
   });
 
-  it("keeps reviewed public paths while removing query strings and hashes", () => {
+  it("keeps reviewed public paths while removing query strings and hashes by default", () => {
     expect(
       normalizePublicSourceUrl(
         "https://docs.example.com/pricing/openai?utm=ad#table",
       ),
     ).toBe("https://docs.example.com/pricing/openai");
+  });
+
+  it("can reject query strings and hashes for observation intake", () => {
+    expect(() =>
+      normalizePublicSourceUrl("https://docs.example.com/pricing?utm=ad", {
+        rejectQueryAndHash: true,
+      }),
+    ).toThrow("Public source URL must not include query strings or hashes");
+
+    expect(() =>
+      normalizePublicSourceUrl("https://docs.example.com/pricing#models", {
+        rejectQueryAndHash: true,
+      }),
+    ).toThrow("Public source URL must not include query strings or hashes");
   });
 
   it("removes trailing slashes from public source paths except origin", () => {
@@ -45,6 +59,42 @@ describe("public source URL policy", () => {
     expect(() => normalizePublicSourceUrl("/pricing/openai")).toThrow(
       "Public source URL must be an absolute URL",
     );
+  });
+
+  it("rejects private and local hosts", () => {
+    expect(() => normalizeUrlToOrigin("http://localhost:3000/pricing")).toThrow(
+      "Observation URL host must be public",
+    );
+    expect(() => normalizeUrlToOrigin("https://192.168.1.2/pricing")).toThrow(
+      "Observation URL host must be public",
+    );
+    expect(() =>
+      normalizePublicSourceUrl("https://admin.internal/pricing"),
+    ).toThrow("Observation URL host must be public");
+  });
+
+  it("rejects private IPv6 literals without rejecting public hostnames with fd prefixes", () => {
+    expect(() =>
+      normalizePublicSourceUrl("https://[fd00::1]/pricing"),
+    ).toThrow("Observation URL host must be public");
+
+    expect(normalizePublicSourceUrl("https://fd.example.com/pricing")).toBe(
+      "https://fd.example.com/pricing",
+    );
+  });
+
+  it("rejects IPv4-mapped IPv6 private addresses", () => {
+    expect(() =>
+      normalizeUrlToOrigin("http://[::ffff:127.0.0.1]/pricing"),
+    ).toThrow("Observation URL host must be public");
+
+    expect(() =>
+      normalizeUrlToOrigin("http://[::ffff:10.0.0.1]/pricing"),
+    ).toThrow("Observation URL host must be public");
+
+    expect(() =>
+      normalizePublicSourceUrl("http://[::ffff:192.168.1.1]/pricing"),
+    ).toThrow("Observation URL host must be public");
   });
 
   it("rejects credential-like and user-specific public paths", () => {
@@ -79,6 +129,14 @@ describe("public source URL policy", () => {
     expect(validatePublicSourceUrl("https://docs.example.com/user/42")).toEqual({
       ok: false,
       reason: "Public source URL path is not public-safe",
+    });
+    expect(
+      validatePublicSourceUrl("https://docs.example.com/pricing?utm=ad", {
+        rejectQueryAndHash: true,
+      }),
+    ).toEqual({
+      ok: false,
+      reason: "Public source URL must not include query strings or hashes",
     });
   });
 });
