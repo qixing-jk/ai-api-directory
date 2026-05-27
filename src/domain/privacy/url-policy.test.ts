@@ -109,6 +109,16 @@ describe("public source URL policy", () => {
     ).toThrow("Observation URL host must be public");
   });
 
+  it("allows public IPv4-mapped IPv6 addresses", () => {
+    expect(normalizeUrlToOrigin("http://[::ffff:8.8.8.8]/pricing")).toBe(
+      "http://[::ffff:808:808]",
+    );
+
+    expect(normalizePublicSourceUrl("http://[::ffff:0808:0808]/pricing")).toBe(
+      "http://[::ffff:808:808]/pricing",
+    );
+  });
+
   it("rejects credential-like and user-specific public paths", () => {
     expect(() =>
       normalizePublicSourceUrl("https://docs.example.com/users/123/pricing"),

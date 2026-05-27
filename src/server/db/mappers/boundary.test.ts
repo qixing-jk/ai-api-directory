@@ -284,4 +284,129 @@ describe("server DB mappers", () => {
       }),
     ]);
   });
+
+  it("maps public-source evidence and route-less probe targets", () => {
+    const plan = mapObservationBatchToDryRunImportPlan({
+      schemaVersion: "2026-05-26",
+      source: "curated_seed",
+      batchId: "88888888-8888-4888-8888-888888888888",
+      generatedAt: "2026-05-26T00:00:00.000Z",
+      producer: {
+        productName: "ai-api-directory-test",
+        contractVersion: "2026-05-26",
+      },
+      consent: { state: "not_applicable" },
+      observations: [
+        {
+          kind: "model_route",
+          siteKey: "example-api",
+          endpointKey: "example-api-main",
+          canonicalModelKey: "gpt-4o-mini",
+          routeModelId: "gpt-4o-mini",
+          providerType: "openai_compatible",
+          factLevel: "listed",
+          modelListSource: "public_model_list",
+          publicSourceUrl: "https://example.com/models",
+          observedAt: "2026-05-26T00:00:00.000Z",
+        },
+        {
+          kind: "verification_probe",
+          target: { siteKey: "example-api" },
+          apiType: "model_list",
+          probeId: "site-model-list",
+          status: "fail",
+          durationBucket: "unknown",
+          errorCategory: "network_error",
+          observedAt: "2026-05-26T00:00:00.000Z",
+        },
+        {
+          kind: "cli_support",
+          target: { siteKey: "example-api" },
+          tool: "codex_cli",
+          probeId: "site-cli",
+          status: "unsupported",
+          durationBucket: "unknown",
+          errorCategory: "unsupported",
+          observedAt: "2026-05-26T00:00:00.000Z",
+        },
+      ],
+    });
+
+    expect(plan.modelRouteCandidates).toEqual([
+      expect.objectContaining({
+        evidenceLevel: "listed",
+      }),
+    ]);
+    expect(plan.evidenceRecords).toEqual([
+      expect.objectContaining({
+        evidenceLevel: "listed",
+        publicSourceUrl: "https://example.com/models",
+      }),
+    ]);
+    expect(plan.verificationProbeEvidence).toEqual([
+      expect.objectContaining({
+        targetKey: "example-api",
+        evidenceLevel: "claimed",
+      }),
+    ]);
+    expect(plan.cliSupportEvidence).toEqual([
+      expect.objectContaining({
+        targetKey: "example-api",
+      }),
+    ]);
+  });
+
+  it("maps minimum recharge prices as non-comparable review facts", () => {
+    const plan = mapObservationBatchToDryRunImportPlan({
+      schemaVersion: "2026-05-26",
+      source: "curated_seed",
+      batchId: "99999999-9999-4999-8999-999999999999",
+      generatedAt: "2026-05-26T00:00:00.000Z",
+      producer: {
+        productName: "ai-api-directory-test",
+        contractVersion: "2026-05-26",
+      },
+      consent: { state: "not_applicable" },
+      observations: [
+        {
+          kind: "price",
+          siteKey: "example-api",
+          routeModelId: "gpt-4o-mini",
+          currency: "USD",
+          billingUnit: "minimum_recharge",
+          minimumRecharge: 5,
+          requestFee: 0.01,
+          source: "synthetic metadata fixture",
+          observedAt: "2026-05-26T00:00:00.000Z",
+        },
+      ],
+    });
+
+    expect(plan.priceCandidates).toEqual([
+      expect.objectContaining({
+        billingUnit: "minimum_recharge",
+        requestFee: 0.01,
+        minimumRecharge: 5,
+        isComparableTokenPrice: false,
+      }),
+    ]);
+  });
+
+  it("rejects invalid seed candidate URLs before candidate mapping", () => {
+    expect(() =>
+      mapSeedSiteCandidateToCandidateInput(
+        {
+          slug: "example-api",
+          displayName: "Example API",
+          homepageUrl: "/account/private",
+          sourceDescription: "manual seed",
+          observedAt: "2026-05-24T00:00:00.001Z",
+        },
+        {
+          batchId,
+          generatedAt: "2026-05-24T00:00:00.000Z",
+        },
+      ),
+    ).toThrow("Invalid URL");
+  });
 });

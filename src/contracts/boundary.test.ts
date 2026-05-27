@@ -574,6 +574,79 @@ describe("typed boundary contracts", () => {
     ).toThrow("Public source URL must not include query strings or hashes");
   });
 
+  it("returns validation issues for invalid observation origins and public source URLs", () => {
+    const originResult = observationBatchSchema.safeParse({
+      schemaVersion: "2026-05-26",
+      source: "curated_seed",
+      batchId,
+      generatedAt: "2026-05-26T00:00:00.000Z",
+      producer: {
+        productName: "ai-api-directory",
+        contractVersion: "2026-05-26",
+      },
+      consent: { state: "not_applicable" },
+      observations: [
+        {
+          kind: "site",
+          siteKey: "example-api",
+          displayName: "Example API",
+          origin: "/account/private",
+          siteType: "relay",
+          category: "ai_gateway",
+          observedAt: "2026-05-26T00:00:00.000Z",
+        },
+      ],
+    });
+
+    expect(originResult.success).toBe(false);
+    if (!originResult.success) {
+      expect(originResult.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: "Public source URL must be an absolute URL",
+          }),
+        ]),
+      );
+    }
+
+    const sourceUrlResult = observationBatchSchema.safeParse({
+      schemaVersion: "2026-05-26",
+      source: "curated_seed",
+      batchId,
+      generatedAt: "2026-05-26T00:00:00.000Z",
+      producer: {
+        productName: "ai-api-directory",
+        contractVersion: "2026-05-26",
+      },
+      consent: { state: "not_applicable" },
+      observations: [
+        {
+          kind: "price",
+          siteKey: "example-api",
+          routeModelId: "gpt-4o-mini",
+          currency: "USD",
+          billingUnit: "per_1m_tokens",
+          inputPer1M: 0.15,
+          source: "public_pricing_page",
+          publicSourceUrl: "https://example.com/pricing?account=private",
+          observedAt: "2026-05-26T00:00:00.000Z",
+        },
+      ],
+    });
+
+    expect(sourceUrlResult.success).toBe(false);
+    if (!sourceUrlResult.success) {
+      expect(sourceUrlResult.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            message:
+              "Public source URL must not include query strings or hashes",
+          }),
+        ]),
+      );
+    }
+  });
+
   it("normalizes pagination query defaults", () => {
     expect(paginationQuerySchema.parse({})).toEqual({
       page: 1,

@@ -130,8 +130,23 @@ describe("observation intake policy", () => {
 
     expect(
       deriveObservationEvidenceLevel({
+        source: observationSource.curatedSeed,
+        kind: observationKind.modelRoute,
+        reviewState: "reviewed_public_source",
+      }),
+    ).toBe(evidenceLevel.listed);
+
+    expect(
+      deriveObservationEvidenceLevel({
         source: observationSource.allApiHubExtension,
         kind: observationKind.modelRoute,
+      }),
+    ).toBe(evidenceLevel.observed);
+
+    expect(
+      deriveObservationEvidenceLevel({
+        source: observationSource.probeJob,
+        kind: observationKind.capability,
       }),
     ).toBe(evidenceLevel.observed);
 
