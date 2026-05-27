@@ -78,6 +78,14 @@ describe("public source URL policy", () => {
       normalizePublicSourceUrl("https://[fd00::1]/pricing"),
     ).toThrow("Observation URL host must be public");
 
+    expect(() =>
+      normalizePublicSourceUrl("https://[0:0:0:0:0:0:0:1]/pricing"),
+    ).toThrow("Observation URL host must be public");
+
+    expect(() =>
+      normalizePublicSourceUrl("https://[fe90::1]/pricing"),
+    ).toThrow("Observation URL host must be public");
+
     expect(normalizePublicSourceUrl("https://fd.example.com/pricing")).toBe(
       "https://fd.example.com/pricing",
     );
@@ -94,6 +102,10 @@ describe("public source URL policy", () => {
 
     expect(() =>
       normalizePublicSourceUrl("http://[::ffff:192.168.1.1]/pricing"),
+    ).toThrow("Observation URL host must be public");
+
+    expect(() =>
+      normalizePublicSourceUrl("http://[::ffff:7f00:1]/pricing"),
     ).toThrow("Observation URL host must be public");
   });
 

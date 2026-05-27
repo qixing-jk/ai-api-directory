@@ -10,6 +10,7 @@ import {
   observationSources,
   probeStatuses,
   type ModelListSource,
+  type ObservationGovernanceOptions,
   type ObservationKind,
   type ObservationSource,
   type ProbeStatus,
@@ -317,41 +318,72 @@ const observationBatchObjectSchema = z
     consent: observationConsentSchema,
     observations: z.array(observationSchema).min(1),
   })
-  .strict()
-  .superRefine((batch, ctx) => {
-    try {
-      assertObservationSourceAllowed({
-        source: batch.source,
-        consent: batch.consent,
+  .strict();
+
+function validateObservationBatchPolicy(
+  batch: z.infer<typeof observationBatchObjectSchema>,
+  ctx: z.RefinementCtx,
+  options: ObservationGovernanceOptions,
+) {
+  try {
+    assertObservationSourceAllowed({
+      source: batch.source,
+      consent: batch.consent,
+      options,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      ctx.addIssue({ code: "custom", message: error.message });
+      return;
+    }
+    throw error;
+  }
+
+  for (const [index, observation] of batch.observations.entries()) {
+    if (
+      observation.kind === observationKind.price &&
+      !isEditorialPriceNoteSource(batch.source) &&
+      (observation.discountNote || observation.exchangeRateNote)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["observations", index],
+        message:
+          "Discount and exchange-rate notes require curated seed or admin import review",
       });
-    } catch (error) {
-      if (error instanceof Error) {
-        ctx.addIssue({ code: "custom", message: error.message });
-        return;
-      }
-      throw error;
     }
+  }
+}
 
-    for (const [index, observation] of batch.observations.entries()) {
-      if (
-        observation.kind === observationKind.price &&
-        !isEditorialPriceNoteSource(batch.source) &&
-        (observation.discountNote || observation.exchangeRateNote)
-      ) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["observations", index],
-          message:
-            "Discount and exchange-rate notes require curated seed or admin import review",
-        });
-      }
+function validateNoSensitiveObservationFields(
+  input: unknown,
+  ctx: z.RefinementCtx,
+) {
+  try {
+    assertNoSensitiveObservationFields(input);
+  } catch (error) {
+    if (error instanceof Error) {
+      ctx.addIssue({ code: "custom", message: error.message });
+      return;
     }
-  });
+    throw error;
+  }
+}
 
-export const observationBatchSchema = z.preprocess((input) => {
-  assertNoSensitiveObservationFields(input);
-  return input;
-}, observationBatchObjectSchema);
+export function createObservationBatchSchema(
+  options: ObservationGovernanceOptions = {},
+) {
+  return z
+    .unknown()
+    .superRefine(validateNoSensitiveObservationFields)
+    .pipe(
+      observationBatchObjectSchema.superRefine((batch, ctx) => {
+        validateObservationBatchPolicy(batch, ctx, options);
+      }),
+    );
+}
+
+export const observationBatchSchema = createObservationBatchSchema();
 
 export type ObservationKindValue = ObservationKind;
 export type ObservationInput = z.infer<typeof observationSchema>;

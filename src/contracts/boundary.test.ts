@@ -9,6 +9,7 @@ import {
 } from "./admin/directory";
 import type { EvidenceLevel, PublishableLifecycle } from "~/domain/vocabularies";
 import {
+  createObservationBatchSchema,
   observationBatchSchema,
   type ObservationBatchInput,
 } from "./import/observation";
@@ -384,6 +385,39 @@ describe("typed boundary contracts", () => {
     ).toThrow("All API Hub extension contribution is not enabled");
   });
 
+  it("accepts explicitly governed All API Hub extension observations", () => {
+    const parsed = createObservationBatchSchema({
+      allowAllApiHubExtension: true,
+    }).parse({
+      schemaVersion: "2026-05-26",
+      source: "all_api_hub_extension",
+      batchId,
+      generatedAt: "2026-05-26T00:00:00.000Z",
+      producer: {
+        productName: "All API Hub",
+        productVersion: "3.41.0",
+        extensionVersion: "3.41.0",
+        contractVersion: "2026-05-26",
+      },
+      consent: {
+        state: "explicit",
+        version: "2026-05-26",
+        acceptedAt: "2026-05-26T00:00:00.000Z",
+      },
+      observations: [
+        {
+          kind: "capability",
+          siteKey: "example-api",
+          capability: "model_list",
+          status: "supported",
+          observedAt: "2026-05-26T00:00:00.000Z",
+        },
+      ],
+    });
+
+    expect(parsed.source).toBe("all_api_hub_extension");
+  });
+
   it("rejects editorial price notes from non-curated and non-admin batches", () => {
     expect(() =>
       observationBatchSchema.parse({
@@ -468,6 +502,46 @@ describe("typed boundary contracts", () => {
     ).toThrow(
       "Observation payload contains sensitive field: observations.0.rawErrorStack",
     );
+  });
+
+  it("returns validation issues instead of throwing from safeParse for sensitive fields", () => {
+    const result = observationBatchSchema.safeParse({
+      schemaVersion: "2026-05-26",
+      source: "curated_seed",
+      batchId,
+      generatedAt: "2026-05-26T00:00:00.000Z",
+      producer: {
+        productName: "ai-api-directory",
+        contractVersion: "2026-05-26",
+      },
+      consent: { state: "not_applicable" },
+      observations: [
+        {
+          kind: "verification_probe",
+          target: { siteKey: "example-api" },
+          apiType: "openai_chat_completions",
+          probeId: "probe-1",
+          status: "pass",
+          observedAt: "2026-05-26T00:00:00.000Z",
+          durationBucket: "1s_to_5s",
+          errorCategory: "none",
+          rawErrorStack: "private",
+        },
+      ],
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            code: "custom",
+            message:
+              "Observation payload contains sensitive field: observations.0.rawErrorStack",
+          }),
+        ]),
+      );
+    }
   });
 
   it("rejects query-bearing public source URLs in observations", () => {

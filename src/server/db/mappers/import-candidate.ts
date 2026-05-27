@@ -38,7 +38,7 @@ export function mapSeedSiteCandidateToCandidateInput(
     displayName: parsed.displayName,
     homepageUrl: siteObservation.origin,
     sourceDescription: parsed.sourceDescription,
-    observedAt: parsed.observedAt,
+    observedAt: siteObservation.observedAt,
     sourceBatch,
     disposition: "candidate",
   };

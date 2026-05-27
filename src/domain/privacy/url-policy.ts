@@ -69,7 +69,7 @@ function parseIpv4MappedIpv6Octets(hostname: string): number[] | null {
   const dottedAddress = parseIpv4Address(mappedAddress);
   if (dottedAddress) return dottedAddress;
 
-  const parts = mappedAddress.split(":");
+  const parts = mappedAddress.split(":").filter(Boolean);
   if (parts.length !== 2) return null;
 
   const [high, low] = parts.map((part) => Number.parseInt(part, 16));
@@ -87,6 +87,18 @@ function parseIpv4MappedIpv6Octets(hostname: string): number[] | null {
   return [high >> 8, high & 0xff, low >> 8, low & 0xff];
 }
 
+function parseIpv6FirstHextet(normalizedHost: string): number | null {
+  const firstHextetRaw = normalizedHost.split(":")[0];
+  if (!firstHextetRaw) return null;
+
+  const firstHextet = Number.parseInt(firstHextetRaw, 16);
+  return Number.isInteger(firstHextet) &&
+    firstHextet >= 0 &&
+    firstHextet <= 0xffff
+    ? firstHextet
+    : null;
+}
+
 function isPrivateIpv6Address(hostname: string): boolean {
   const normalizedHost = hostname.replace(/^\[|\]$/g, "").toLowerCase();
   if (!normalizedHost.includes(":")) return false;
@@ -96,11 +108,14 @@ function isPrivateIpv6Address(hostname: string): boolean {
     return isPrivateIpv4Octets(mappedIpv4Octets);
   }
 
+  const firstHextet = parseIpv6FirstHextet(normalizedHost);
+  const isUniqueLocal = firstHextet !== null && (firstHextet & 0xfe00) === 0xfc00;
+  const isLinkLocal = firstHextet !== null && (firstHextet & 0xffc0) === 0xfe80;
+
   return (
     normalizedHost === "::1" ||
-    normalizedHost.startsWith("fc") ||
-    normalizedHost.startsWith("fd") ||
-    normalizedHost.startsWith("fe80:")
+    isUniqueLocal ||
+    isLinkLocal
   );
 }
 

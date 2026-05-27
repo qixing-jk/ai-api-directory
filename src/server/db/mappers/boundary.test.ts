@@ -61,7 +61,7 @@ describe("server DB mappers", () => {
           displayName: "Example API",
           homepageUrl: "https://example.com/account/private?token=secret",
           sourceDescription: "manual seed",
-          observedAt: "2026-05-24T00:00:00.000Z",
+          observedAt: "2026-05-24T00:00:00.001Z",
         },
         {
           batchId,
@@ -74,7 +74,7 @@ describe("server DB mappers", () => {
       displayName: "Example API",
       homepageUrl: "https://example.com",
       sourceDescription: "manual seed",
-      observedAt: "2026-05-24T00:00:00.000Z",
+      observedAt: "2026-05-24T00:00:00.001Z",
       sourceBatch: {
         schemaVersion: "2026-05-26",
         source: "curated_seed",
@@ -93,7 +93,7 @@ describe("server DB mappers", () => {
             origin: "https://example.com",
             siteType: "unknown",
             category: "unknown",
-            observedAt: "2026-05-24T00:00:00.000Z",
+            observedAt: "2026-05-24T00:00:00.001Z",
             producerConfidenceHint: 60,
           },
         ],
